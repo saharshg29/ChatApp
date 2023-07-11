@@ -1,7 +1,11 @@
 const express = require("express");
+const cors = require("cors")
 const dotenv = require("dotenv");
 const chats = require("../backend/data/data");
 const app = express();
+
+app.use(cors())
+
 dotenv.config();
 
 app.get("/", (req, res) => {

@@ -1,4 +1,6 @@
-import { FormControl, InputGroup, FormLabel, Input, VStack, InputRightElement, Button } from '@chakra-ui/react'
+import { FormControl, useToast, InputGroup, FormLabel, Input, VStack, InputRightElement, Button } from '@chakra-ui/react'
+import axios from "axios"
+import {useNavigate} from "react-router-dom"
 
 import React, { useState } from 'react'
 
@@ -10,14 +12,113 @@ const Signup = () => {
     const [password, setPassword] = useState("")
     const [confirmpassword, setConfirmpassword] = useState("")
     const [pic, setPic] = useState("")
+    const [loading, setLoading] = useState(false)
+    const toast = useToast()
+    const navigate = useNavigate()
 
 
-    const postDetails =(pic) => {
+    const postDetails = (pic) => {
+        setLoading(true)
+        if (pic === undefined) {
+            toast({
+                title: "Please select an Image!",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom"
+            })
+            return
+        }
 
+        if (pic.type === "image/jpeg" || pic.type === "image/png") {
+            const data = new FormData()
+            data.append("file", pic)
+            data.append("upload_preset", "chat-app")
+            data.append("cloud_name", "dama33gzp")
+            fetch("https://api.cloudinary.com/v1_1/dama33gzp/image/upload", {
+                method: "post",
+                body: data
+            })
+                .then(res => res.json())
+                .then((data) => {
+                    setPic(data.url.toString())
+                    console.log(pic)
+                    setLoading(false)
+                })
+                .catch(err => {
+                    console.log(err)
+                    setLoading(false)
+                })
+        } else {
+            toast({
+                title: "Please select an Image!",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom"
+            })
+            return
+        }
     }
 
-    const submitHandler = () => {
+    const submitHandler = async () => {
+        setLoading(true)
+        if (!name || !email || !password || !confirmpassword) {
+            toast({
+                title: "Please fill all the fields",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            })
+            setLoading(false)
+            return
+        }
+        if (password !== confirmpassword) {
+            toast({
+                title: "Password do not match",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: 'bottom'
+            })
+            return
+        }
 
+        try {
+            const config = {
+                headers: {
+                    "Content-type": "application/json",
+
+                },
+            }
+
+            const { data } = await axios.post("/api/user",
+                { name, email, password, pic },
+                config
+            );
+            toast({
+                title: "Signup Sucessfull",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom"
+            })
+
+            localStorage.setItem("userInfo", JSON.stringify(data))
+            setLoading(false)
+            navigate('/chats')
+        }
+        catch (error) {
+            toast({
+                title: "Error Occured!",
+                description: error.response.data.message,
+                status: "error",
+                isClosable: true,
+                position: "bottom"
+            })
+            setLoading(false)
+        }
     }
 
 
@@ -102,6 +203,7 @@ const Signup = () => {
                     width={"100%"}
                     style={{ marginTop: 15 }}
                     onClick={submitHandler}
+                    isLoading={loading}
                 >
                     Sign Up
                 </Button>

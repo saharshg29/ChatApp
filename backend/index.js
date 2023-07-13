@@ -10,9 +10,14 @@ app.use(cors())
 dotenv.config();
 
 connectDB()
+
+app.use(express.json()) // To allow acces to json
 app.get("/", (req, res) => {
   res.send("API is running");
 });
+
+// including the db
+
 
 app.use("/api/user", userRoutes)
 

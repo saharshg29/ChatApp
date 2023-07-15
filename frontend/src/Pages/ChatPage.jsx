@@ -1,51 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import axios from "axios"
+import React from 'react'
+import { ChatState } from "../context/ChatProvider"
+import { Box } from "@chakra-ui/react"
+import SideDrawer from '../components/miscellaneous/SideDrawer'
+import MyChats from '../components/MyChats'
+import ChatBox from '../components/ChatBox'
+
+
 const ChatPage = () => {
-
-    const [chats, setChats] = useState([])
-
-    const fetchChats = () => {
-        axios.get("http://localhost:5000/api/chat/")
-            .then(data => {
-                let packet = data.data
-                setChats(packet)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    // const fetchChats = async () => {
-
-    //     const response = await fetch('http://localhost:5000/api/chat/', {
-    //         method: 'GET',
-    //         mode: 'cors',
-    //         // headers: {
-    //         //     Authorization: `Bearer: ${token}`,
-    //         //     'Content-Type': 'application/json',
-    //         // },
-    //         // body: JSON.stringify(data),
-    //     })
-    //     console.log(response.json())
-    // }
-
-
-    useEffect(() => {
-        fetchChats()
-    }, [])
+    const { user } = ChatState()
 
     return (
-        <div>
-            {
-
-                chats.map((chat) => {
-                    return <div key={chat._id}>
-                        {
-                            chat.chatName
-                        }
-                    </div>
-                })
-            }
+        <div style={{ width: "100%" }}>
+            {user && <SideDrawer />}
+            <Box
+            d="flex"
+            justifyContent={"space-between"}
+            w={"100%"}
+            h={"91.5vh"}
+            p={"10px"}
+            >
+                {user && <MyChats />}
+                {user && <ChatBox />}
+            </Box>
         </div>
     )
 }

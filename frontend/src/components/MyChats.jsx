@@ -6,7 +6,7 @@ import { AddIcon, } from '@chakra-ui/icons'
 import ChatLoading from './ChatLoading'
 import { getSender } from "../config/ChatLogic"
 import { GroupChatModal } from './miscellaneous/GroupChatModal'
-const MyChats = () => {
+const MyChats = ({fetchAgain}) => {
   const [loggedUser, setLoggedUser] = useState()
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState()
 
@@ -38,7 +38,7 @@ const MyChats = () => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")))
     fetchChats()
-  }, [])
+  }, [fetchAgain])
   return (
     <>
       <Box
@@ -90,7 +90,7 @@ const MyChats = () => {
               <Stack overflowY={"scroll"}>
                 {chats.map((chat) => {
                   return <Box
-                    onClick={() => selectedChat(chat)}
+                    onClick={() => setSelectedChat(chat)}
                     cursor={"pointer"}
                     bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
                     color={selectedChat === chat ? "white" : "black"}

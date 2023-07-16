@@ -9,7 +9,7 @@ import ChatLoading from '../ChatLoading'
 import UserListItem from '../UserAvatar/UserListItem'
 
 const SideDrawer = () => {
-  const { user, setSelectedChat, chats, setChats } = ChatState()
+  const { user, setSelectedChat, selectedChat, chats, setChats } = ChatState()
   const navigate = useNavigate()
   const [search, setSearch] = useState("")
   const [searchResult, setSearchResult] = useState([])
@@ -160,11 +160,12 @@ const SideDrawer = () => {
                   <UserListItem
                     key={user._id}
                     user={user}
-                    handleFunction={() => accessChat(user.id)} />
+                    handleFunction={() => accessChat(user._id)} />
                 ))
               )}
             {loadingChat && <Spinner ml={"auto"} display={"flex"} />}
           </DrawerBody>
+          
         </DrawerContent>
       </Drawer>
     </>

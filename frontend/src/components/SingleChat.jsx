@@ -131,6 +131,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     </Text>
 
                     <Box
+                        position={"relative"}
                         display={"flex"}
                         flexDirection={"column"}
                         p={3}
@@ -154,18 +155,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 <>
                                     <div className='messages'>
                                         <ScrollableChat
-                                        messages={messages} />
+                                        style={{width: "90%"}}
+                                            messages={messages} />
                                     </div>
                                 </>
                             )
                         }
                         <FormControl
-                            position={"bottom"}
+                            style={{ position: "absolute", bottom: 4, left: 3}}
                             onKeyDown={sendMessage}
                             isRequired
                             mt={3}
                         >
                             <Input
+                                position={"bottom"}
+                                width={"99%"}
                                 variant={"filled"}
                                 bg={"E8E8E8"}
                                 placeholder='Message'

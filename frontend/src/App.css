@@ -5,3 +5,7 @@
     display: flex;
     background-color: rgba(19, 14, 14, 0.626);
 }
+
+*{
+    overflow: hidden;
+}

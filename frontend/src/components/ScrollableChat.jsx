@@ -23,7 +23,7 @@ const ScrollableChat = ({ messages }) => {
                                         mr={1}
                                         size={"sm"}
                                         cursor={"pointer"}
-                                        name={m.sendere.name}
+                                        name={m.sender.name}
                                         src={m.sender.pic}
                                     />
                                 </Tooltip>
@@ -35,7 +35,7 @@ const ScrollableChat = ({ messages }) => {
                                     }`,
                                 borderRadius: "20px",
                                 padding: "5px 15px",
-                                maxWidth: "75px",
+                                maxWidth: "35vw",
                                 marginLeft: isSameSenderMargin(messages, m, i, user._id),
                                 marginTop: isSameUser(messages, m, i, user._id) ? 3:10
                             }}

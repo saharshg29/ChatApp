@@ -35,7 +35,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [typing, setTyping] = useState(false)
     const [isTyping, setIsTyping] = useState(false)
 
-    const { user, selectedChat, setSelectedChat } = ChatState()
+    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState()
 
 
     useEffect(() => {
@@ -48,12 +48,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     useEffect(() => {
         socket.on("message recieved", (newMessageRecieved) => {
             if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
-                // Give notification
+                if (!notification.includes(newMessageRecieved)) {
+                    setNotification([newMessageRecieved, ...notification])
+                    setFetchAgain(!fetchAgain)
+                }
             } else {
                 setMessages([...messages, newMessageRecieved])
             }
         })
     })
+
+
     const fetchMessages = async () => {
         if (!selectedChat) return
 
@@ -67,14 +72,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             setLoading(true)
 
             const { data } = await axios.get(`/api/message/${selectedChat._id}`, config)
-            console.log(data)
             setMessages(data)
             setLoading(false)
 
 
             socket.emit("join chat", selectedChat._id)
 
-            console.log(socket.emit)
         } catch (error) {
             console.log(error.message)
             toast({
@@ -213,7 +216,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 <>
                                     <div className='messages'>
                                         <ScrollableChat
-                                            style={{ width: "90%" }}
+                                            style={{ width: "90%", overflow: "none"}}
                                             messages={messages} />
                                     </div>
                                 </>
@@ -227,13 +230,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         >
                             {isTyping ? <div>Loading....</div> : (<></>)}
                             <Input
+                                // style={{ position: "absolute", bottom: 4, left: 3 }}
                                 position={"bottom"}
                                 width={"99%"}
                                 variant={"filled"}
-                                bg={"E8E8E8"}
+                                bg={"white"}
                                 placeholder='Message'
                                 onChange={typingHandler}
                                 value={newMessage}
+                                opacity={1}
                             />
                         </FormControl>
 

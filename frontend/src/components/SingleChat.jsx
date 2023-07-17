@@ -11,7 +11,7 @@ import ScrollableChat from './ScrollableChat'
 import io from "socket.io-client"
 
 
-const ENDPOINT = "http://localhost:5000"
+const ENDPOINT = "https://nodejs-production-6d3c.up.railway.app/"
 var socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {

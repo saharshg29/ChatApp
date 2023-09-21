@@ -8,34 +8,17 @@ import ProfileModal from './miscellaneous/ProfileModal'
 import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
 import axios from 'axios'
 import ScrollableChat from './ScrollableChat'
-import io from "socket.io-client"
 
-
-const ENDPOINT = "https://nodejs-production-6d3c.up.railway.app/"
-var socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
-
-    useEffect(() => {
-        socket = io(ENDPOINT)
-        socket.emit("setup", user)
-        socket.on('connected', () => setSocketConnected(true))
-
-        socket.on("typing", () => setIsTyping(true))
-        socket.on("stop typing", () => setIsTyping(false))
-
-    }, [])
-
     const toast = useToast()
-    const [socketConnected, setSocketConnected] = useState(false)
+
     const [messages, setMessages] = useState([])
     const [loading, setLoading] = useState(false)
     const [newMessage, setNewMessage] = useState("")
-    const [typing, setTyping] = useState(false)
-    const [isTyping, setIsTyping] = useState(false)
 
-    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState()
+    const { user, selectedChat, setSelectedChat } = ChatState()
 
 
     useEffect(() => {
@@ -74,12 +57,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             const { data } = await axios.get(`/api/message/${selectedChat._id}`, config)
             setMessages(data)
             setLoading(false)
-
-
-            socket.emit("join chat", selectedChat._id)
-
         } catch (error) {
-            console.log(error.message)
             toast({
                 title: "Error Occured",
                 description: "Failed to send the message",
@@ -93,7 +71,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     const sendMessage = async (event) => {
         if (event.key === "Enter" && newMessage) {
-            socket.emit("stop typing", selectedChat._id)
             try {
                 const config = {
                     headers: {
@@ -110,7 +87,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
                 console.log(data)
 
-                socket.emit("new message", data)
                 setMessages([...messages, data])
             } catch (error) {
                 toast({
@@ -128,27 +104,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value)
-
-        if (!socketConnected) return
-
-        if (!typing) {
-            setTyping(true)
-            socket.emit("typing", selectedChat._id)
-        }
-
-        let lastTime = new Date().getTime()
-        var timerLength = 3000
-        setTimeout(() => {
-            var timeNow = new Date().getTime()
-            var timeDiff = timeNow - lastTime
-
-            if (timeDiff >= timerLength && typing) {
-                socket.emit("stop typing", selectedChat._id)
-                setTyping(false)
-            }
-        }, timerLength)
     }
 
+    useEffect(() => {
+        fetchMessages()
+
+    }, [selectedChat])
 
 
     return (
@@ -216,19 +177,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 <>
                                     <div className='messages'>
                                         <ScrollableChat
-                                            style={{ width: "90%", overflow: "none"}}
+                                        style={{width: "90%"}}
                                             messages={messages} />
                                     </div>
                                 </>
                             )
                         }
                         <FormControl
-                            style={{ position: "absolute", bottom: 4, left: 3 }}
+                            style={{ position: "absolute", bottom: 4, left: 3}}
                             onKeyDown={sendMessage}
                             isRequired
                             mt={3}
                         >
-                            {isTyping ? <div>Loading....</div> : (<></>)}
                             <Input
                                 // style={{ position: "absolute", bottom: 4, left: 3 }}
                                 position={"bottom"}
